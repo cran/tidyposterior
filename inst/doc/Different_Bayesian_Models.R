@@ -5,7 +5,7 @@ if(!eval_chunks)
   cat(
     "(These documents take a long time to create, so only the code",
     "is shown here. The full version is at",
-    "[https://topepo.github.io/tidyposterior](https://topepo.github.io/tidyposterior).)"
+    "[https://tidymodels.github.io/tidyposterior](https://tidymodels.github.io/tidyposterior).)"
     )
 
 ## ----load, include = FALSE, message = FALSE, warning = FALSE, eval = eval_chunks----
@@ -15,7 +15,7 @@ if(!eval_chunks)
 #  theme_set(theme_bw())
 #  options(width = 100, digits = 3)
 
-## ----rmse-results, eval = eval_chunks, dev = "svg"-----------------------
+## ----rmse-results, eval = eval_chunks------------------------------------
 #  library(tidyposterior)
 #  data("noisy_example")
 #  
@@ -55,16 +55,16 @@ if(!eval_chunks)
 #  gamma_mean <- summary(gamma_post)
 #  gamma_mean
 
-## ----gamma, eval = eval_chunks, dev = "svg"------------------------------
+## ----gamma, eval = eval_chunks-------------------------------------------
 #  ggplot(gamma_post) +
 #    geom_point(data = gamma_mean, aes(y = mean), alpha = .5) +
 #    geom_point(data = mean_rmse, aes(y = statistic),
 #               col = "red", pch = 4, cex= 3)
 
-## ----log-linear-fit, eval = eval_chunks, dev = "svg"---------------------
+## ----log-linear-fit, eval = eval_chunks----------------------------------
 #  log_linear_model <- perf_mod(rmses, transform = ln_trans, seed = 74)
 
-## ----log-linear, eval = eval_chunks, dev = "svg"-------------------------
+## ----log-linear, eval = eval_chunks--------------------------------------
 #  log_linear_post <- tidy(log_linear_model, seed = 3750)
 #  
 #  log_linear_mean <- summary(log_linear_post)
@@ -75,7 +75,7 @@ if(!eval_chunks)
 #    geom_point(data = mean_rmse, aes(y = statistic),
 #               col = "red", pch = 4, cex= 3)
 
-## ----linear-linear, eval = eval_chunks, dev = "svg"----------------------
+## ----linear-linear, eval = eval_chunks-----------------------------------
 #  linear_model <- perf_mod(rmses, seed = 74)
 #  
 #  linear_post <- tidy(linear_model, seed = 3750)
@@ -86,7 +86,7 @@ if(!eval_chunks)
 #    geom_point(data = mean_rmse, aes(y = statistic),
 #               col = "red", pch = 4, cex= 3)
 
-## ----gamma-contrast, eval = eval_chunks, dev = "svg"---------------------
+## ----gamma-contrast, eval = eval_chunks----------------------------------
 #  all_contrasts <- contrast_models(linear_model, seed = 8967)
 #  ggplot(all_contrasts, size = 1)
 #  summary(all_contrasts, size = 1)

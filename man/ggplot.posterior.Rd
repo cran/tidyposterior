@@ -4,8 +4,8 @@
 \alias{ggplot.posterior}
 \title{Visualize the Posterior Distributions of Model Statistics}
 \usage{
-\method{ggplot}{posterior}(data, mapping = NULL, ..., environment = NULL,
-  reorder = TRUE)
+\method{ggplot}{posterior}(data, mapping = NULL, ...,
+  environment = NULL, reorder = TRUE)
 }
 \arguments{
 \item{data}{An object produced by \code{\link[=tidy.perf_mod]{tidy.perf_mod()}}.}
@@ -26,10 +26,13 @@ A simple violin plot is created by the function.
 # Example objects from the "Getting Started" vignette at
 #  https://topepo.github.io/tidyposterior/articles/Getting_Started.html
 
-file <- system.file("examples", "roc_model.RData", package = "tidyposterior")
-load(file)
+# File for pre-run model is at
+ex_dat <- "https://bit.ly/2OJdvl1"
 
-posterior_values <- tidy(roc_model)
+# load(load(url(ex_dat))
 
-ggplot(posterior_values) + theme_bw()
+# posterior_values <- tidy(roc_model)
+
+# library(ggplot2)
+# ggplot(posterior_values) + theme_bw()
 }

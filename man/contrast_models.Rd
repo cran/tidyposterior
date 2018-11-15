@@ -4,8 +4,8 @@
 \alias{contrast_models}
 \title{Estimate the Difference Between Models}
 \usage{
-contrast_models(x, list_1 = NULL, list_2 = NULL, seed = sample.int(10000,
-  1))
+contrast_models(x, list_1 = NULL, list_2 = NULL,
+  seed = sample.int(10000, 1))
 }
 \arguments{
 \item{x}{An object produced by \code{\link[=perf_mod]{perf_mod()}}.}
@@ -36,9 +36,11 @@ inverse is applied \emph{before} the difference is computed.
 # Example objects from the "Getting Started" vignette at
 #  https://topepo.github.io/tidyposterior/articles/Getting_Started.html
 
-file <- system.file("examples", "glm_v_nnet.RData", package = "tidyposterior")
-load(file)
+# File for pre-run model is at
+ex_dat <- "https://bit.ly/2S1v6H9"
 
-head(glm_v_nnet)
+# load(load(url(ex_dat))
+
+# head(glm_v_nnet)
 
 }

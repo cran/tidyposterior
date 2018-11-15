@@ -5,7 +5,7 @@ if(!eval_chunks)
   cat(
     "(These documents take a long time to create, so only the code",
     "is shown here. The full version is at",
-    "[https://topepo.github.io/tidyposterior](https://topepo.github.io/tidyposterior).)"
+    "[https://tidymodels.github.io/tidyposterior](https://tidymodels.github.io/tidyposterior).)"
     )
 
 ## ----load, include = FALSE, message = FALSE, warning = FALSE, eval = eval_chunks----
@@ -15,7 +15,7 @@ if(!eval_chunks)
 #  theme_set(theme_bw())
 #  options(width = 100, digits = 3)
 
-## ----roc-data, eval = eval_chunks, dev = "svg"---------------------------
+## ----roc-data, eval = eval_chunks----------------------------------------
 #  library(tidyposterior)
 #  data("precise_example")
 #  
@@ -40,7 +40,7 @@ if(!eval_chunks)
 ## ----save-mod, include = FALSE, eval = eval_chunks-----------------------
 #  # Two objects are saved to be used in the man files
 #  # `build_site` runs these in `tidyposterior/docs/articles`
-#  save(roc_model, file = "../../inst/examples/roc_model.RData", compress = TRUE)
+#  try(save(roc_model, file = "../../inst/examples/roc_model.RData", compress = TRUE), silent = TRUE)
 
 ## ----linear-model-results, eval = eval_chunks----------------------------
 #  roc_model$stan
@@ -49,7 +49,7 @@ if(!eval_chunks)
 #  roc_post <- tidy(roc_model)
 #  head(roc_post)
 
-## ----linear-model-post-plot, eval = eval_chunks, dev = "svg"-------------
+## ----linear-model-post-plot, eval = eval_chunks--------------------------
 #  ggplot(roc_post) +
 #    # Add the observed data to check for consistency
 #    geom_point(
@@ -63,11 +63,11 @@ if(!eval_chunks)
 #  head(glm_v_nnet)
 
 ## ----save-contrast, include = FALSE, eval = eval_chunks------------------
-#  save(glm_v_nnet, file = "../../inst/examples/glm_v_nnet.RData", compress = TRUE)
+#  try(save(glm_v_nnet, file = "../../inst/examples/glm_v_nnet.RData", compress = TRUE), silent = TRUE)
 
 ## ----glm-v-nnet-summary, eval = eval_chunks------------------------------
 #  summary(glm_v_nnet, size = 0.02)
 
-## ----glm-v-nnet-plot, eval = eval_chunks, dev = "svg"--------------------
+## ----glm-v-nnet-plot, eval = eval_chunks---------------------------------
 #  ggplot(glm_v_nnet, size = 0.02)
 

@@ -4,8 +4,8 @@
 \alias{summary.posterior}
 \title{Summarize the Posterior Distributions of Model Statistics}
 \usage{
-\method{summary}{posterior}(object, prob = 0.9, seed = sample.int(10000, 1),
-  ...)
+\method{summary}{posterior}(object, prob = 0.9,
+  seed = sample.int(10000, 1), ...)
 }
 \arguments{
 \item{object}{An object produced by \code{\link[=tidy.perf_mod]{tidy.perf_mod()}}.}
@@ -30,10 +30,12 @@ uncertainty intervals).
 # Example objects from the "Getting Started" vignette at
 #  https://topepo.github.io/tidyposterior/articles/Getting_Started.html
 
-file <- system.file("examples", "roc_model.RData", package = "tidyposterior")
-load(file)
+# File for pre-run model is at
+ex_dat <- "https://bit.ly/2OJdvl1"
 
-posterior_values <- tidy(roc_model)
-summary(posterior_values)
+# load(load(url(ex_dat))
+
+# posterior_values <- tidy(roc_model)
+# summary(posterior_values)
 
 }
