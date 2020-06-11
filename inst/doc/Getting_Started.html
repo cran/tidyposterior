@@ -1,45 +1,57 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 
 
 
 <title>Getting Started</title>
 
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
 
 
 <style type="text/css">code{white-space: pre;}</style>
-<style type="text/css">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; position: absolute; }
-.sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; }
-pre.numberSource a.sourceLine:empty
-  { position: absolute; }
-pre.numberSource a.sourceLine::before
-  { content: attr(data-line-number);
-    position: absolute; left: -5em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all;
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -48,9 +60,9 @@ pre.numberSource a.sourceLine::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {  }
+  {   }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -81,7 +93,29 @@ code span.st { color: #4070a0; } /* String */
 code span.va { color: #19177c; } /* Variable */
 code span.vs { color: #4070a0; } /* VerbatimString */
 code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
 </style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
 
 
 
@@ -305,6 +339,9 @@ code > span.fu { color: #900; font-weight: bold; }
 code > span.er { color: #a61717; background-color: #e3d2d2; } 
 </style>
 
+
+
+
 </head>
 
 <body>
@@ -323,25 +360,26 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </ul>
 </div>
 
-<p>(These documents take a long time to create, so only the code is shown here. The full version is at <a href="https://tidymodels.github.io/tidyposterior" class="uri">https://tidymodels.github.io/tidyposterior</a>.)</p>
+<p>(These documents take a long time to create, so only the code is shown here. The full version is at <a href="https://tidymodels.github.io/tidyposterior">https://tidymodels.github.io/tidyposterior</a>.)</p>
 <p>The example that we will use here is from the analysis of a fairly large classification data set using 10-fold cross-validation with three models. Looking at the accuracy values, the differences are pretty clear. For the area under the ROC curve:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">library</span>(tidyposterior)</a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">data</span>(<span class="st">&quot;precise_example&quot;</span>)</a>
-<a class="sourceLine" id="cb1-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="kw">library</span>(tidyverse)</a>
-<a class="sourceLine" id="cb1-5" data-line-number="5"></a>
-<a class="sourceLine" id="cb1-6" data-line-number="6">rocs &lt;-<span class="st"> </span>precise_example <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="st">   </span><span class="kw">select</span>(id, <span class="kw">contains</span>(<span class="st">&quot;ROC&quot;</span>)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb1-8" data-line-number="8"><span class="st">   </span><span class="kw">setNames</span>(<span class="kw">tolower</span>(<span class="kw">gsub</span>(<span class="st">&quot;_ROC$&quot;</span>, <span class="st">&quot;&quot;</span>, <span class="kw">names</span>(.)))) </a>
-<a class="sourceLine" id="cb1-9" data-line-number="9">rocs</a>
-<a class="sourceLine" id="cb1-10" data-line-number="10"></a>
-<a class="sourceLine" id="cb1-11" data-line-number="11"><span class="kw">library</span>(ggplot2)</a>
-<a class="sourceLine" id="cb1-12" data-line-number="12"></a>
-<a class="sourceLine" id="cb1-13" data-line-number="13">rocs_stacked &lt;-<span class="st"> </span><span class="kw">gather</span>(rocs)</a>
-<a class="sourceLine" id="cb1-14" data-line-number="14"></a>
-<a class="sourceLine" id="cb1-15" data-line-number="15"><span class="kw">ggplot</span>(rocs_stacked, <span class="kw">aes</span>(<span class="dt">x =</span> model, <span class="dt">y =</span> statistic, <span class="dt">group =</span> id, <span class="dt">col =</span> id)) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb1-16" data-line-number="16"><span class="st">  </span><span class="kw">geom_line</span>(<span class="dt">alpha =</span> <span class="fl">.75</span>) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb1-17" data-line-number="17"><span class="st">  </span><span class="kw">theme</span>(<span class="dt">legend.position =</span> <span class="st">&quot;none&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">library</span>(tidyposterior)</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">data</span>(<span class="st">&quot;precise_example&quot;</span>)</span>
+<span id="cb1-3"><a href="#cb1-3"></a></span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="kw">library</span>(tidyverse)</span>
+<span id="cb1-5"><a href="#cb1-5"></a></span>
+<span id="cb1-6"><a href="#cb1-6"></a>rocs &lt;-<span class="st"> </span>precise_example <span class="op">%&gt;%</span></span>
+<span id="cb1-7"><a href="#cb1-7"></a><span class="st">   </span><span class="kw">select</span>(id, <span class="kw">contains</span>(<span class="st">&quot;ROC&quot;</span>)) <span class="op">%&gt;%</span></span>
+<span id="cb1-8"><a href="#cb1-8"></a><span class="st">   </span><span class="kw">setNames</span>(<span class="kw">tolower</span>(<span class="kw">gsub</span>(<span class="st">&quot;_ROC$&quot;</span>, <span class="st">&quot;&quot;</span>, <span class="kw">names</span>(.)))) </span>
+<span id="cb1-9"><a href="#cb1-9"></a>rocs</span>
+<span id="cb1-10"><a href="#cb1-10"></a></span>
+<span id="cb1-11"><a href="#cb1-11"></a><span class="kw">library</span>(ggplot2)</span>
+<span id="cb1-12"><a href="#cb1-12"></a></span>
+<span id="cb1-13"><a href="#cb1-13"></a><span class="co"># The rocs object is not a real `rset` object so use basic `gather()`</span></span>
+<span id="cb1-14"><a href="#cb1-14"></a>rocs_stacked &lt;-<span class="st"> </span><span class="kw">gather</span>(rocs, <span class="st">&quot;model&quot;</span>, <span class="st">&quot;statistic&quot;</span>, <span class="op">-</span>id)</span>
+<span id="cb1-15"><a href="#cb1-15"></a></span>
+<span id="cb1-16"><a href="#cb1-16"></a><span class="kw">ggplot</span>(rocs_stacked, <span class="kw">aes</span>(<span class="dt">x =</span> model, <span class="dt">y =</span> statistic, <span class="dt">group =</span> id, <span class="dt">col =</span> id)) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb1-17"><a href="#cb1-17"></a><span class="st">  </span><span class="kw">geom_line</span>(<span class="dt">alpha =</span> <span class="fl">.75</span>) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb1-18"><a href="#cb1-18"></a><span class="st">  </span><span class="kw">theme</span>(<span class="dt">legend.position =</span> <span class="st">&quot;none&quot;</span>)</span></code></pre></div>
 <p>Since the lines are fairly parallel, there is likely to be a strong resample-to-resample effect. Note that the variation is fairly small; the within-model results don’t vary a lot and are not near the ceiling of performance (i.e. an AUC of one). It also seems pretty clear that the models are producing different levels of performance, but we’ll use this package to clarify this. Finally, there seems to be roughly equal variation for each model despite the difference in performance.</p>
 <p>If <code>rocs</code> were produced by the <code>rsample</code> package it is ready to use with <code>tidyposterior</code>, which has a method for <code>rset</code> objects.</p>
 <div id="a-basic-linear-model" class="section level2">
@@ -353,37 +391,37 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <p>To answer that, a model can be created where the <em>outcome</em> is the resampling statistics (the area under the ROC curve in this example). These values are explained by the model types. In doing this, we can get parameter estimates for each model’s effect on the resampled ROC values and make statistical (and practical) comparisons between models.</p>
 <p>We will try a simple linear model with Gaussian errors that has a random effect for the resamples so that the within-resample correlation can be estimated. Although the outcome is bounded in the interval [0,1], the variability of these estimates might be precise enough to achieve a well-fitting model.</p>
 <p>To fit the model, <code>perf_mod</code> will be used to fit a model using the <code>stan_glmer</code> function in the <code>rstanarm</code> package:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">roc_model &lt;-<span class="st"> </span><span class="kw">perf_mod</span>(rocs, <span class="dt">seed =</span> <span class="dv">2824</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>roc_model &lt;-<span class="st"> </span><span class="kw">perf_mod</span>(rocs, <span class="dt">seed =</span> <span class="dv">2824</span>)</span></code></pre></div>
 <p>The <code>stan_glmer</code> model is contained in the element <code>roc_model$stan</code>:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">roc_model<span class="op">$</span>stan</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>roc_model<span class="op">$</span>stan</span></code></pre></div>
 <p>To evaluate the validity of this fit, the <a href="http://mc-stan.org/users/interfaces/shinystan"><code>shinystan</code></a> package can be used to generate an interactive assessment of the model results. One other thing that we can do it to examine the posterior distributions to see if they make sense in terms of the range of values.</p>
 </div>
 <div id="getting-the-posterior-distributions" class="section level2">
 <h2>Getting the Posterior Distributions</h2>
 <p>The <code>tidy</code> function can be used to extract the distributions into a simple data frame:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">roc_post &lt;-<span class="st"> </span><span class="kw">tidy</span>(roc_model)</a>
-<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw">head</span>(roc_post)</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>roc_post &lt;-<span class="st"> </span><span class="kw">tidy</span>(roc_model)</span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="kw">head</span>(roc_post)</span></code></pre></div>
 <p>There is a basic <code>ggplot</code> method for this object and we can overlay the observed statistics for each model:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw">ggplot</span>(roc_post) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="st">  </span><span class="co"># Add the observed data to check for consistency </span></a>
-<a class="sourceLine" id="cb5-3" data-line-number="3"><span class="st">  </span><span class="kw">geom_point</span>(</a>
-<a class="sourceLine" id="cb5-4" data-line-number="4">    <span class="dt">data =</span> rocs_stacked, </a>
-<a class="sourceLine" id="cb5-5" data-line-number="5">    <span class="kw">aes</span>(<span class="dt">x =</span> model, <span class="dt">y =</span> statistic), </a>
-<a class="sourceLine" id="cb5-6" data-line-number="6">    <span class="dt">alpha =</span> <span class="fl">.5</span>, <span class="dt">col =</span> <span class="st">&quot;blue&quot;</span></a>
-<a class="sourceLine" id="cb5-7" data-line-number="7">  )</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw">ggplot</span>(roc_post) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="st">  </span><span class="co"># Add the observed data to check for consistency </span></span>
+<span id="cb5-3"><a href="#cb5-3"></a><span class="st">  </span><span class="kw">geom_point</span>(</span>
+<span id="cb5-4"><a href="#cb5-4"></a>    <span class="dt">data =</span> rocs_stacked, </span>
+<span id="cb5-5"><a href="#cb5-5"></a>    <span class="kw">aes</span>(<span class="dt">x =</span> model, <span class="dt">y =</span> statistic), </span>
+<span id="cb5-6"><a href="#cb5-6"></a>    <span class="dt">alpha =</span> <span class="fl">.5</span>, <span class="dt">col =</span> <span class="st">&quot;blue&quot;</span></span>
+<span id="cb5-7"><a href="#cb5-7"></a>  )</span></code></pre></div>
 <p>These results look fairly reasonable given that we estimated a common variance for each of the models.</p>
 </div>
 <div id="comparing-models" class="section level2">
 <h2>Comparing Models</h2>
 <p>We’ll compare the generalized linear model with the neural network. Before doing so, it helps to specify what a real difference between models would be. Suppose that a 2% increase in accuracy was considered to be a substantive results. We can add this into the analysis.</p>
 <p>First, we can compute the posterior for the difference in RMSE for the two models (parameterized as <code>nnet</code>-<code>glm</code>):</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">glm_v_nnet &lt;-<span class="st"> </span><span class="kw">contrast_models</span>(roc_model, <span class="st">&quot;nnet&quot;</span>, <span class="st">&quot;glm&quot;</span>)</a>
-<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="kw">head</span>(glm_v_nnet)</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>glm_v_nnet &lt;-<span class="st"> </span><span class="kw">contrast_models</span>(roc_model, <span class="st">&quot;nnet&quot;</span>, <span class="st">&quot;glm&quot;</span>)</span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="kw">head</span>(glm_v_nnet)</span></code></pre></div>
 <p>The <code>summary</code> function can be used to quantify this difference. It has an argument called <code>size</code> where we can add our belief about the size of a true difference.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw">summary</span>(glm_v_nnet, <span class="dt">size =</span> <span class="fl">0.02</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw">summary</span>(glm_v_nnet, <span class="dt">size =</span> <span class="fl">0.02</span>)</span></code></pre></div>
 <p>The <code>probability</code> column indicates the proportion of the posterior distribution that is greater than zero. This result indicates that the entire distribution is larger than one. The credible intervals reflect the large difference in the area under the ROC curves for these models.</p>
 <p>Before discussing the ROPE estimates, let’s plot the posterior distribution of the differences:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="kw">ggplot</span>(glm_v_nnet, <span class="dt">size =</span> <span class="fl">0.02</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="kw">ggplot</span>(glm_v_nnet, <span class="dt">size =</span> <span class="fl">0.02</span>)</span></code></pre></div>
 <p>The column <code>pract_neg</code> reflects the area where the posterior distribution is <em>less</em> than -2% (i.e, <em>practically negative</em>). Similarly, the <code>pract_pos</code> shows that most of the area is greater than 2% which leads us to believe that this is a truly a substantial difference in performance. The <code>pract_equiv</code> reflects how much of the posterior is between [-2%, 2%]. If this were near one, it might indicate that the models are not practically different (based on the yardstick of 2%).</p>
 </div>
 
@@ -407,6 +445,9 @@ window.onload = function() {
   }
 }
 </script>
+
+
+<!-- code folding -->
 
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
