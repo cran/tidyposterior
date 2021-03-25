@@ -1,3 +1,13 @@
+# tidyposterior 0.1.0
+
+* The `ggplot()` methods are now removed in factor of `autoplot()` methods. 
+
+* `perf_mod()` methods added for tuning parameter objects from `tune`, `finetune`, and `workflowsets`. 
+
+* `rstanarm` version 2.21.1 or higher is now required due to changes to their APIs.
+
+* Re-licensed package from GPL-2 to MIT. All copyright holders are RStudio employees and give consent.
+
 # `tidyposterior` 0.0.3
 
 * `contrast_models()` now returns a tibble and has an extra column called `contrast`. 
@@ -5,6 +15,8 @@
 * The plot methods are now deprecated and will be removed in the next version. They are not very good and can be replaced with simple `ggplot` code.  
 
 * An optional formula argument was added to `perf_mod.rset()` and `perf_mod.data.frame()`. When the resampling method has multiple ID columns, a nested data structure is assumed (with a warning). The new `formula` argument can be used to over-ride the nesting.  
+
+
 
 ## Breaking Changes
 
