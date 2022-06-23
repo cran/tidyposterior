@@ -1,3 +1,9 @@
+# tidyposterior 1.0.0
+
+* Transition from `gather()` to `pivot_longer()`. 
+
+* Update to testthat 3e.
+
 # tidyposterior 0.1.0
 
 * The `ggplot()` methods are now removed in factor of `autoplot()` methods. 
