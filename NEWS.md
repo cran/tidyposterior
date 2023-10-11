@@ -1,3 +1,9 @@
+# tidyposterior 1.0.1
+
+Maintenance release for a broken test in current R-devel. 
+
+Maintainer email change. 
+
 # tidyposterior 1.0.0
 
 * Transition from `gather()` to `pivot_longer()`. 
