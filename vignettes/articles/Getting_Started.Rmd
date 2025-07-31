@@ -9,8 +9,16 @@ output:
 ---
 
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, fig.align = "center")
+```{r}
+#| label: setup
+#| include: false
+if (rlang::is_installed(c("tidymodels", "parsnip", "yardstick", "splines2"))) {
+  run <- TRUE
+} else {
+  run <- FALSE
+}
+
+knitr::opts_chunk$set(echo = TRUE, fig.align = "center", eval = run)
 library(tidymodels)
 library(tidyposterior)
 data(two_class_dat)
@@ -20,7 +28,8 @@ theme_set(theme_bw() + theme(legend.position = "top"))
 
 To show how `tidyposterior` compares models, let's look at a small data set. The `modeldata` package has a data set called `two_class_dat` that has `r nrow(two_class_dat)` data points on to predictors. The outcome is a two-level factor. There is some linear-ish separation between the classes but hints that a nonlinear class boundary might do slightly better. 
 
-```{r class-plot}
+```{r}
+#| label: class-plot
 #| fig-alt: "Scatter chart. A along the x-axis, B along the y-axis. Two classes class1 and class2 are colors red and blue respectively. data is linear-ish separation with class2 having higher B values."
 library(tidymodels)
 library(tidyposterior)
@@ -36,7 +45,8 @@ ggplot(two_class_dat, aes(x = A, y = B, col = Class)) +
 
 We'll use simple 10-fold cross-validation here. Any other resampling method from `rsample`, except a simple validation set, would also be appropriate. 
 
-```{r resampling}
+```{r}
+#| label: resampling
 set.seed(1)
 cv_folds <- vfold_cv(two_class_dat)
 cv_folds
@@ -44,22 +54,24 @@ cv_folds
 
 We'll use a logistic regression model for these data and initially consider two different preprocessing methods that might help the fit. Let's define a model specification: 
 
-```{r logistic}
-logistic_spec <- logistic_reg() %>% set_engine("glm")
+```{r}
+#| label: logistic
+logistic_spec <- logistic_reg() |> set_engine("glm")
 ```
 
 ## Comparing modeling/prepreocessing methods
 
-One way to incorporate nonlinearity into the class boundary is to use a spline basis expansion for the predictors. A `recipe` step using `step_ns` will will encode the predictors in this way. The degrees of freedom will be hard-coded to produce two additional feature columns per predictor: 
+One way to incorporate nonlinearity into the class boundary is to use a spline basis expansion for the predictors. A `recipe` step using `step_spline_natural` will will encode the predictors in this way. The degrees of freedom will be hard-coded to produce two additional feature columns per predictor: 
 
-```{r splines}
+```{r}
+#| label: splines
 spline_rec <- 
-  recipe(Class ~ ., data = two_class_dat) %>% 
-  step_ns(A, B, deg_free = 3)
+  recipe(Class ~ ., data = two_class_dat) |> 
+  step_spline_natural(A, B, deg_free = 3)
 
 spline_wflow <- 
-  workflow() %>% 
-  add_recipe(spline_rec) %>% 
+  workflow() |> 
+  add_recipe(spline_rec) |> 
   add_model(logistic_spec)
 ```
 
@@ -67,26 +79,28 @@ Binding the model and recipe into a workflow creates a simple interface when we 
 
 An alternate preprocessing method is to normalize the data using a spatial sign transformation. This projects the predictors on to a unit circle and can sometimes mitigate the effect of collinearity or outliers. A recipe is also used. Here is a visual representation of the data after the transformation: 
 
-```{r class-plot-spatial-sign}
+```{r}
+#| label: class-plot-spatial-sign
 #| fig-alt: "Scatter chart. A along the x-axis, B along the y-axis. Two classes class1 and class2 are colors red and blue respectively. All points are on the unit circle. with most of the blue points having a higher B value."
 spatial_sign_rec <- 
-  recipe(Class ~ ., data = two_class_dat) %>% 
-  step_normalize(A, B) %>% 
+  recipe(Class ~ ., data = two_class_dat) |> 
+  step_normalize(A, B) |> 
   step_spatialsign(A, B)
 
-spatial_sign_rec %>% 
-  prep() %>% 
-  bake(new_data = NULL) %>% 
+spatial_sign_rec |> 
+  prep() |> 
+  bake(new_data = NULL) |> 
   ggplot(aes(x = A, y = B, col = Class)) + 
   geom_point(alpha = 0.3, cex = 2) +
   coord_fixed()
 ```
 Another workflow is created for this method: 
 
-```{r spatial-sign}
+```{r}
+#| label: spatial-sign
 spatial_sign_wflow <- 
-  workflow() %>% 
-  add_recipe(spatial_sign_rec) %>% 
+  workflow() |> 
+  add_recipe(spatial_sign_rec) |> 
   add_model(logistic_spec)
 ```
 
@@ -94,25 +108,27 @@ spatial_sign_wflow <-
 
 To produce this format with our tidymodels objects, this small convenience function will create a model on the 90% of the data allocated by cross-validation, predict the other 10%, then calculate the area under the ROC curve. If you use tidymodels, there are high-level interfaces (shown below) that don't require such a function. 
 
-```{r compute-roc-values}
+```{r}
+#| label: compute-roc-values
 compute_roc <- function(split, wflow) {
   # Fit the model to 90% of the data
   mod <- fit(wflow, data = analysis(split))
   # Predict the other 10%
   pred <- predict(mod, new_data = assessment(split), type = "prob")
   # Compute the area under the ROC curve
-  pred %>% 
-    bind_cols(assessment(split)) %>% 
-    roc_auc(Class, .pred_Class1) %>% 
+  pred |> 
+    bind_cols(assessment(split)) |> 
+    roc_auc(Class, .pred_Class1) |> 
     pull(.estimate)
 }
 ```
 
 For our `rsample` object `cv_folds`, let's create two columns of ROC statistics using this function in conjunction with `purrr::map` and `dplyr::mutate`: 
 
-```{r roc-values}
+```{r}
+#| label: roc-values
 roc_values <- 
-  cv_folds %>% 
+  cv_folds |> 
   mutate(
     spatial_sign = map_dbl(splits, compute_roc, spatial_sign_wflow),
     splines      = map_dbl(splits, compute_roc, spline_wflow)
@@ -155,24 +171,30 @@ Other options that can be helpful (but we'll use their defaults):
 
 Our call to this function is:
 
-```{r preproc-bayes-analysis}
+```{r}
+#| label: preproc-bayes-analysis
 rset_mod <- perf_mod(roc_values, seed = 2, iter = 5000, chains = 5, refresh = 0)
 ```
 
 The `summary()` function for this type of object shows the output from `stan_glmer()`. It's long, so we show some of the initial output: 
 
-```{r preproc-bayes-summary, eval = FALSE}
+```{r}
+#| label: preproc-bayes-summary
+#| eval: false
 print(summary(rset_mod), digits = 3)
 ```
 
-```{r preproc-bayes-summary-print, echo = FALSE}
+```{r}
+#| label: preproc-bayes-summary-print
+#| echo: false
 res <- capture.output(print(summary(rset_mod), digits = 3))
 cat(c(res[1:16], "", "<snip>\n"), sep = "\n")
 ```
 
 Assuming that our assumptions are appropriate, one of the main things that we'd like to get out of the object are samples of the posterior distributions for the performance metrics (per modeling method). The `tidy()` method will produce a data frame with such samples: 
 
-```{r preproc-bayes-tidy}
+```{r}
+#| label: preproc-bayes-tidy
 tidy(rset_mod, seed = 3)
 ```
 
@@ -180,7 +202,8 @@ We require a `seed` value since it is a sample.
 
 There is a simple plotting method for the object too: 
 
-```{r preproc-bayes-plot}
+```{r}
+#| label: preproc-bayes-plot
 #| fig-alt: "Line chart. posterior along the x-axis, density along the y-axis. Two lines representing spatial_sign and splines are colors red and blue respectively. The densities appear to have similar shape, with splines being shifted 0.02 to the right. Full range is from 0.80 to 0.95."
 autoplot(rset_mod)
 ```
@@ -189,7 +212,8 @@ There is some overlap but, again, it would be better if we could quantify this.
 
 To compare models, the `contrast_models()` function computes the posterior distributions of differences in performance statistics between models. For example, what does the posterior look like for the difference in performance for these two preprocessing methods? By default, the function computes all possible differences (a single contrast for this example). There are also `summary()` and plot methods:  
 
-```{r preproc-contrast}
+```{r}
+#| label: preproc-contrast
 #| fig-alt: "Line chart. Differences in ROC (spatial sign - splines) along the x-axis, posterior along the y-axis. the highpoint of the density is at around -0.02. Full range is -0.05 to 0.02."
 preproc_diff <- contrast_models(rset_mod, seed = 4)
 summary(preproc_diff, seed = 5)
@@ -205,9 +229,10 @@ Once we have settled on a value of this effect size (in the units of the statist
 The summary and plot methods have optional arguments called `size.` The `summary()` function computes the probability of the posterior differences that fall inside and outside of this region. The plot method shows it visually: 
 
 
-```{r preproc-rope}
+```{r}
+#| label: preproc-rope
 #| fig-alt: "Line chart. Differences in ROC (spatial sign - splines) along the x-axis, posterior along the y-axis. the highpoint of the density is at around -0.02. Full range is -0.05 to 0.02. dotted vertical lines have been placed at -0.02 and 0.02."
-summary(preproc_diff, size = 0.02) %>% 
+summary(preproc_diff, size = 0.02) |> 
   select(contrast, starts_with("pract"))
 autoplot(preproc_diff, size = 0.02)
 ```
@@ -224,17 +249,18 @@ However, Gaussian seems like a good first approach for this assumption. The rati
 
 As a simple (and approximate) example/diagnostics, suppose we used a simple ANOVA for the ROC statistics using `lm()`. This is not the same analysis as the one used by `tidyposterior`, but the regression parameter estimates should be fairly similar. For that analysis, we can assess the normality of the residuals and see that they are pretty consistent with the normality assumption:  
 
-```{r roc_dist}
+```{r}
+#| label: roc_dist
 #| fig-alt: "Scatter chart. x along the x-axis, y along the y-axis. A dashed line goes at a diagonal, with all the points located around it."
 roc_longer <- 
-  roc_values %>% 
-  select(-splits) %>% 
+  roc_values |> 
+  select(-splits) |> 
   pivot_longer(cols = c(-id), names_to = "preprocessor", values_to = "roc")
 
 roc_fit <- lm(roc ~ preprocessor, roc_longer)
 
-roc_fit %>% 
-  augment() %>% 
+roc_fit |> 
+  augment() |> 
   ggplot(aes(sample = .resid)) + 
   geom_qq() + 
   geom_qq_line(lty = 2) +
@@ -257,17 +283,19 @@ For our spline analysis, we assumed that three degrees of freedom were appropria
 
 The previous spline recipe is altered so that the degrees of freedom parameter doesn't have an actual value. Instead, using a value of `tune()` will mark this parameter for optimization. There are a few different approaches for tuning this parameter; we'll use simpe grid search. 
 
-```{r tune-rec}
+```{r}
+#| label: tune-rec
 spline_rec <- 
-  recipe(Class ~ ., data = two_class_dat) %>% 
+  recipe(Class ~ ., data = two_class_dat) |> 
   step_ns(A, B, deg_free = tune())
 ```
 
 The `tune` package function `tune_grid()` is used to evaluate several values of the parameter. For each value, the resampled area under the ROC curve is computed.  
 
-```{r tune-grid}
+```{r}
+#| label: tune-grid
 spline_tune <-
-  logistic_spec %>%
+  logistic_spec |>
   tune_grid(
     spline_rec,
     resamples = cv_folds,
@@ -275,13 +303,14 @@ spline_tune <-
     metrics = metric_set(roc_auc),
     control = control_grid(save_workflow = TRUE)
   )
-collect_metrics(spline_tune) %>% 
+collect_metrics(spline_tune) |> 
   arrange(desc(mean))
 ```
 
 There is a `perf_mod()` method for this type of object. The computations are conducted in the same manner but, in this instance, four sub-models are compared. 
 
-```{r tune-grid-bayes}
+```{r}
+#| label: tune-grid-bayes
 #| fig-alt: "Line chart. roc_auc along the x-axis, density along the y-axis. The density lines are colored according to the preprocessor. There is a fair amount of overlap. With Preprocessor4 having the lowest values."
 grid_mod <- perf_mod(spline_tune, seed = 6, iter = 5000, chains = 5, refresh = 0)
 autoplot(grid_mod)
@@ -293,7 +322,8 @@ There is a lot of overlap. The results do call into question the overall utility
 
 The contrast_model function can take two lists of model identifiers and compute their differences. Again, for tuning objects, this should include values of `.config`. This specification compute the difference `{1 df - X df}` so positive differences indicate that the linear model is better. 
 
-```{r tune-grid-bayes-contrast}
+```{r}
+#| label: tune-grid-bayes-contrast
 grid_diff <-
   contrast_models(
     grid_mod,
@@ -308,7 +338,8 @@ grid_diff <-
 ```
 
 
-```{r tune-grid-bayes-contrast-plot}
+```{r}
+#| label: tune-grid-bayes-contrast-plot
 #| fig-alt: "Faceted line chart. difference along the x-axis, posterior probability along the y-axis. Each density corresponds to the difference between preprocessor1 and the other 3 preprocessors. preprocessor2 looks to have a mean around 0, preprocessor3 looks to have a mean around 0.0025, and preprocessor4 looks to have a mean around 0.005. Range is from -0.015 to 0.02."
 summary(grid_diff)
 autoplot(grid_diff)
@@ -318,7 +349,8 @@ The results indicate that a lot of degrees of freedom might make the model worse
 
 The ROPE analysis is more definitive; there is no sense of practical differences within the previously used effect size: 
 
-```{r tune-grid-rope}
+```{r}
+#| label: tune-grid-rope
 #| fig-alt: "Faceted line chart. difference along the x-axis, posterior probability along the y-axis. Each density corresponds to the difference between preprocessor1 and the other 3 preprocessors. preprocessor2 looks to have a mean around 0, preprocessor3 looks to have a mean around 0.0025, and preprocessor4 looks to have a mean around 0.005. Range is from -0.015 to 0.02. vertical dashed lines placed at -0.02 and 0.02."
 autoplot(grid_diff, size = 0.02)
 ```
@@ -329,7 +361,8 @@ Workflow sets are collections of workflows and their results. These can be made 
 
 Let's create an initial set that has difference combinations of the two predictors for this data set. 
 
-```{r wflow-set-create}
+```{r}
+#| label: wflow-set-create
 library(workflowsets)
 
 logistic_set <- 
@@ -343,22 +376,24 @@ logistic_set
 
 The `object` volumn contains the workflows that are created by the combinations of preprocessors and the model (multiple models could have been used). Rather than calling the same functions from the `tune` package repeatedly, we can evaluate these with a single function call. Notice that none of these workflows require tuning so `tune::fit_resamples()` can be used: 
 
-```{r wflow-set-resample}
+```{r}
+#| label: wflow-set-resample
 logistic_res <- 
-  logistic_set %>% 
+  logistic_set |> 
   workflow_map("fit_resamples", seed = 3, resamples = cv_folds, 
                metrics = metric_set(roc_auc)) 
 logistic_res
 
-collect_metrics(logistic_res) %>% 
+collect_metrics(logistic_res) |> 
   filter(.metric == "roc_auc")
 ```
 
 We can also add the previously tuned spline results by first converting them to a workflow set then appending their rows to the results: 
 
-```{r wflow-set-appned}
+```{r}
+#| label: wflow-set-appned
 logistic_res <- 
-  logistic_res %>% 
+  logistic_res |> 
   bind_rows(
     as_workflow_set(splines = spline_tune)
   )
@@ -367,29 +402,33 @@ logistic_res
 
 There are some convenience functions to take an initial look at the results: 
 
-```{r wflow-res}
+```{r}
+#| label: wflow-res
 #| fig-alt: "Error-bar chart. The x-axis is the workflow rank in the set (a value of one being the best) versus the performance metric(s) on the y-axis. All but two of the hower around a little under 0.9. with the last two being at 0.75 and 0.70."
-rank_results(logistic_res, rank_metric = "roc_auc") %>% 
+rank_results(logistic_res, rank_metric = "roc_auc") |> 
   filter(.metric == "roc_auc")
 autoplot(logistic_res, metric = "roc_auc")
 ```
 
 The `perf_mod()` method for workflow sets takes the best submodel from each workflow and then uses the standard `tidyposterior` analysis: 
 
-```{r wflow-mod}
+```{r}
+#| label: wflow-mod
 roc_mod <- perf_mod(logistic_res, metric = "roc_auc", seed = 1, refresh = 0)
 ```
 
 The results of this call produces an object with an additional class to enable some `autoplot()` methods specific to workflow sets. For example, the default plot shows 90% credible intervals for the best results in each workflow: 
 
-```{r wflow-intervals}
+```{r}
+#| label: wflow-intervals
 #| fig-alt: "Error-bar chart. The x-axis is the workflow rank in the set (a value of one being the best) versus the performance metric(s) on the y-axis. splines is doing the best with a mean around 0.885, spatial_sign_logistic and B_logistic both have a mean around 0.87. The error bars makes it so these 3 models are within each others. ratio_logisitc has a mean of 0.75 and A_logistic has a mean around 0.70."
 autoplot(roc_mod)
 ```
 
 Alternatively, the ROPE estimates for a given since can be computed to compare the numerically best workflow to the others. The probability of practical equivalence is shown for all results: 
 
-```{r wflow-rope}
+```{r}
+#| label: wflow-rope
 #| fig-alt: "Connected line chart. Workflow Rank along the x-axis, Probability of Practical Equivalence along the y axis. Splines has value of 1. spatial_sign_logistic has value of 0.6, B_logistic has a value of 0.575, ratio_logistic and A_logistic both has a value of 0."
 autoplot(roc_mod, type = "ROPE", size = 0.025)
 ```
